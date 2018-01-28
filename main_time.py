@@ -7,7 +7,7 @@ Card_List = []
 select_card = True
 card = None
 budget = 5
-
+prev_diff = 0
 def intial():
     carts_distance = int((360 - len(Card_List) * 60) / (len(Card_List) + 1))
     distance = carts_distance
@@ -309,15 +309,16 @@ class Tower:
 #     	budget =10
 #         budget_need = False
 def deposit(time_need_begin):
-	global budget
-	diff = int((time.time()-time_need_begin)*100)
-	print(budget)
-	if budget<10 and diff%100==0 :
-		budget+=1
-		
-		return False
-	elif budget==10:
-		return True
+    global budget,prev_diff
+    diff = int((time.time()-time_need_begin))
+    print(budget)
+    if budget<10 and prev_diff!=diff and diff%2==0 :
+        budget+=1
+        prev_diff = diff
+        return False
+    elif budget==10:
+        prev_diff = diff
+        return True
 	
 
 def chosen_card(pos, Card_List):
@@ -333,7 +334,7 @@ def main():
     game_end = None#Time.now()
     game_begin = None
     budget_need = True
-    global Card_List, select_card, card,watch,budget
+    global Card_List, select_card, card,watch,budget,prev_diff
     InGameCards = []
 #refill_time = T(2.0, deposit(budget))
 # game_time = T(1.0,clock(watch))
