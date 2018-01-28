@@ -2,8 +2,10 @@ import pygame
 import sys
 from pygame import mouse as m
 #from threading import Timer as T
-
+InGameCards=[]
 Card_List = []
+int((360 - len(Card_List) * 60) / (len(Card_List) + 1))
+
 select_card = True
 card = None
 
@@ -14,9 +16,10 @@ def intial(screen):
     for card in Card_List:
         card.set_position((distance, 530))
         # screen.blit(card.picture, (distance, 530))
+        card.first_x = distance
         distance = distance + carts_distance + 60
+
         if card.id == 1:
-            print("fuck")
             # card.picture = pygame.image.load("GiantCard_ingame.png")
             card.max_health = 800
             card.health = card.max_health
@@ -159,15 +162,30 @@ def get_event(Giant, Witch, Wizard, Fireball, Archer, Bomber, Balloon):
             select_card = False
 
 
-def main_get_event(Card_List, budget, InGameCards):
-    global card
+def main_get_event(budget):
+    global card,InGameCards,Card_List
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
         if card:
-            if event.type == pygame.MOUSEBUTTONUP and card.get_position()[
-                1] > card.available_area and card.get_cost() <= budget and card.get_position()[1] < 440:
+            print(len(Card_List))
+            if event.type == pygame.MOUSEBUTTONUP and card.get_position()[1] > card.available_area and card.get_cost() <= budget and card.get_position()[1] < 440:
+                next_card = Card('background.jpg')
+                next_card.picture=card.picture
+                next_card.position = (card.first_x , 530)
+                next_card.damage = card.damage
+                next_card.max_health = card.max_health
+                next_card.health = card.health
+                next_card.status = card.status
+                next_card.att_status = card.att_status
+                next_card.cost = card.cost
+                next_card.speed = card.speed
+                next_card.id = card.id
+                next_card.range = card.range
+                next_card.available_area = card.available_area
+                next_card.first_x = card.first_x
+                Card_List.append(next_card)
                 if card.id == 1:
                     card.picture = pygame.image.load("GiantCard_ingame.png")
                 elif card.id == 2:
@@ -184,10 +202,14 @@ def main_get_event(Card_List, budget, InGameCards):
                     card.picture = pygame.image.load("archers_ingame.png")
                 elif card.id == 8:
                     card.picture = pygame.image.load("LavaHoundCard_ingame.png")
-                Card_List.append(card)
+
                 InGameCards.append(card)
+                Card_List.remove(card)
                 card = None
-        # print(card)
+            elif event.type == pygame.MOUSEBUTTONUP:
+
+                card.position = (card.first_x , 530)
+                card = None
 
 
 class Card:
@@ -204,7 +226,7 @@ class Card:
         self.id = 0
         self.range = 0
         self.available_area = 0
-
+        self.first_x = 0
     def move(self, Destination):
         self.position = (self.position[0] + self.speed * (Destination[0] - self.position[0]) / (
                     (Destination[0] - self.position[0]) ** 2 + (Destination[1] - self.position[1]) ** 2) ** 0.5,
@@ -212,7 +234,7 @@ class Card:
                                 (Destination[0] - self.position[0]) ** 2 + (Destination[1] - self.position[1]) ** 2) ** 0.5)
 
     def attack(self, enemy):
-        enemy.set_health(enemy.get_health - self.power)
+        enemy.set_health(enemy.get_health - self.damage)
 
     def get_position(self):
         return self.position
@@ -242,9 +264,13 @@ class Card:
 def ShowCards(Card_List, screen):
     for card in Card_List:
         screen.blit(card.picture, card.get_position())
+    for card in InGameCards:
+        screen.blit(card.picture, card.get_position())
+
 
 
 '''class Giant(Card):
+    5022-2910-6143-1597
 	def __init__(picture_address):
 		self.image = pygame.image.load (picture)
 		self.power = 10
@@ -353,7 +379,6 @@ def main():
 
         screen.fill((255, 255, 255))
         get_event(Giant, Witch, Wizard, Fireball, Archer, Bomber, Balloon)
-        # print(select_card)
         screen.blit(Giant.picture, (25, 220))
         screen.blit(Wizard.picture, (105, 220))
         screen.blit(Witch.picture, (185, 220))
@@ -382,12 +407,10 @@ def main():
                 pygame.mouse.get_pressed()[0]:
             pygame.draw.rect(screen, (0, 200, 0), (130, 500, 100, 50))
         pygame.display.update()
-    for i in Card_List:
-        print(i.id)
     intial(screen)
     #clock(watch)
     while True:
-        main_get_event(Card_List, budget, InGameCards)
+        main_get_event(budget)
         screen.fill((255, 255, 255))
         screen.blit(pygame.image.load("background.jpg"), (0, 0))
         ShowCards(Card_List, screen)
