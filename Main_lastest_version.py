@@ -1,4 +1,3 @@
-
 import pygame,sys,time
 from pygame import mouse as m
 InGameCards=[]
@@ -260,10 +259,18 @@ class Card:
 
 
 def ShowCards(Card_List, screen):
+    global budget
     for card in Card_List:
         screen.blit(card.picture, card.get_position())
     for card in InGameCards:
         screen.blit(card.picture, card.get_position())
+        health = int(card.health/card.max_health)*4+1
+        if card.health == card.max_health:
+            health = 4
+        for i in range(health):
+            pygame.draw.rect(screen,(30,144,255),(card.get_position()[0]+i*10,card.get_position()[1]-7,9,5))
+    for i in range(budget):
+        pygame.draw.rect(screen,(255,0,255),(12+i*(30+4),617,30,20))
 
 
 
@@ -340,7 +347,6 @@ class Tower:
 def deposit(time_need_begin):
     global budget,prev_diff
     diff = int((time.time()-time_need_begin))
-    print(budget)
     if budget<10 and prev_diff!=diff and diff%2==0 :
         budget+=1
         prev_diff = diff
@@ -365,6 +371,8 @@ def main():
     global Card_List, select_card, card , budget , prev_diff
     InGameCards = []
     pygame.init()
+    Clash_Font = pygame.font.SysFont("Chalkduster",25)
+    Clash_Font1 = pygame.font.SysFont("Chalkduster",30)
     windowWidth = 360
     windowHeight = 640
     Giant = Card("GiantCard copy.png")
@@ -386,8 +394,9 @@ def main():
     screen = pygame.display.set_mode((windowWidth, windowHeight))
 
     while select_card:
-
+        lable = Clash_Font1.render("Choose Your Cards",True,(255,215,0))
         screen.fill((255, 255, 255))
+        screen.blit(lable,(17,100))
         get_event(Giant, Witch, Wizard, Fireball, Archer, Bomber, Balloon)
         screen.blit(Giant.picture, (25, 220))
         screen.blit(Wizard.picture, (105, 220))
@@ -421,11 +430,23 @@ def main():
     game_begin = time.time()
     while True:
         game_end = time.time()
-        if int(game_end - game_begin) == 120:
+        time_left = 180 - int(game_end - game_begin)
+        if time_left>30:
+            if time_left%60<10: 
+                lable = Clash_Font.render(str(time_left//60)+':'+'0'+str(time_left%60),True,(255,255,255))
+            else:
+                lable = Clash_Font.render(str(time_left//60)+':'+str(time_left%60),True,(255,255,255))
+        else:
+            if time_left%60<10: 
+                lable = Clash_Font.render(str(time_left//60)+':'+'0'+str(time_left%60),True,(255,0,0))
+            else:
+                lable = Clash_Font.render(str(time_left//60)+':'+str(time_left%60),True,(255,0,0))
+        if int(game_end - game_begin) == 180:
             break
         main_get_event()
         screen.fill((255, 255, 255))
         screen.blit(pygame.image.load("background.jpg"), (0, 0))
+        screen.blit(lable,(300,10))
         ShowCards(Card_List, screen)
         if budget_need and budget!=10:
             time_need_begin = time.time()
