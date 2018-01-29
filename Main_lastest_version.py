@@ -1,23 +1,25 @@
-import pygame,sys,time
+import pygame,sys,time,random
 from pygame import mouse as m
 InGameCards=[]
 Card_List = []
+other_cards=[]
+Tower_List = []
+Other_Towers = []
+in_range_enmy = []
 select_card = True
 card = None
 budget = 5
 prev_diff = 0
 
 def intial():
+    global Card_List,Tower_List
     carts_distance = int((360 - len(Card_List) * 60) / (len(Card_List) + 1))
     distance = carts_distance
     for card in Card_List:
         card.set_position((distance, 530))
-        # screen.blit(card.picture, (distance, 530))
         card.first_x = distance
         distance = distance + carts_distance + 60
-
         if card.id == 1:
-            # card.picture = pygame.image.load("GiantCard_ingame.png")
             card.max_health = 800
             card.health = card.max_health
             card.status = 'Ground'
@@ -28,7 +30,6 @@ def intial():
             card.range = 5 + 42
             card.damage = 120
         if card.id == 2:
-            # card.picture = pygame.image.load("WitchCard_ingame.png")
             card.max_health = 500
             card.health = card.max_health
             card.status = 'Ground'
@@ -39,7 +40,6 @@ def intial():
             card.range = 30 + 42
             card.damage = 50
         if card.id == 3:
-            # card.picture = pygame.image.load("WizardCard_ingame.png")
             card.max_health = 350
             card.health = card.max_health
             card.status = 'Ground'
@@ -50,7 +50,6 @@ def intial():
             card.range = 30 + 42
             card.damage = 80
         if card.id == 4:
-            # card.picture = pygame.image.load("FireballCard_ingame.png")
             card.max_health = 350
             card.health = card.max_health
             card.status = 'Air'
@@ -61,7 +60,6 @@ def intial():
             card.range = 30 + 42
             card.damage = 50
         if card.id == 5:
-            # card.picture = pygame.image.load("BomberCard_ingame.png")
             card.max_health = 150
             card.health = card.max_health
             card.status = 'Ground'
@@ -72,7 +70,6 @@ def intial():
             card.range = 30 + 42
             card.damage = 50
         if card.id == 6:
-            # card.picture = pygame.image.load("BalloonCard_ingame.png")
             card.max_health = 600
             card.health = card.max_health
             card.status = 'Air'
@@ -83,7 +80,6 @@ def intial():
             card.range = 42 + 5
             card.damage = 100
         if card.id == 7:
-            # card.picture = pygame.image.load("archers_ingame.png")
             card.max_health = 300
             card.health = card.max_health
             card.status = 'Ground'
@@ -94,7 +90,6 @@ def intial():
             card.range = 30 + 42
             card.damage = 50
         if card.id == 8:
-            # card.picture = pygame.image.load("LavaHoundCard_ingame.png")
             card.max_health = 1000
             card.health = card.max_health
             card.status = 'Air'
@@ -104,6 +99,51 @@ def intial():
             card.att_status = 'building'
             card.range = 42 + 15
             card.damage = 50
+    for tower in Tower_List:
+        if tower.id == 1:
+            tower.max_health = 2000
+            tower.health = tower.max_health
+            tower.position = (149,406)
+            tower.range = 65
+            tower.damage = 80
+            tower.size = (57,78)
+        if tower.id == 2:
+            tower.max_health = 1500
+            tower.health = tower.max_health
+            tower.position = (68,370)
+            tower.range = 65
+            tower.damage = 65
+            tower.size = (40,51)
+        if tower.id == 3:
+            tower.max_health = 1500
+            tower.health = tower.max_health
+            tower.position = (258,370)
+            tower.range = 65
+            tower.damage = 65
+            tower.size = (40,51)
+    for tower in Other_Towers:
+        if tower.id == 1:
+            tower.max_health = 2000
+            tower.health = tower.max_health
+            tower.position = (149,56)
+            tower.range = 65
+            tower.damage = 80
+            tower.size = (60,81)
+        if tower.id == 2:
+            tower.max_health = 1500
+            tower.health = tower.max_health
+            tower.position = (68,110)
+            tower.range = 65
+            tower.damage = 65
+            tower.size = (40,54)
+        if tower.id == 3:
+            tower.max_health = 1500
+            tower.health = tower.max_health
+            tower.position = (258,110)
+            tower.range = 65
+            tower.damage = 65
+            tower.size = (40,54)
+
 
 
 def get_event(Giant, Witch, Wizard, Fireball, Archer, Bomber, Balloon):
@@ -258,10 +298,34 @@ class Card:
         return self.id
 
 
-def ShowCards(Card_List, screen):
-    global budget
+def ShowCards(Card_List, screen , Ingame_enm_cards):
+    global budget,Tower_List,Other_Towers
+    for tower in Tower_List:
+        screen.blit(tower.img,tower.position)
+        health = int(tower.health/tower.max_health)*4+1
+        if tower.health == tower.max_health:
+            health = 4
+        for i in range(health):
+            if tower.id!=1:
+                pygame.draw.rect(screen,(30,144,255),(tower.position[0]+i*10+6,tower.position[1]+66,9,5))
+            else:
+                pygame.draw.rect(screen,(30,144,255),(tower.position[0]+i*14+4,tower.position[1]+76,12,5))
+
+    for tower in Other_Towers:
+        screen.blit(tower.img,tower.position)
+        health = int(tower.health/tower.max_health)*4+1
+        if tower.health == tower.max_health:
+            health = 4
+        for i in range(health):
+            if tower.id!=1:
+                pygame.draw.rect(screen,(255,69,0),(tower.position[0]+i*10+8,tower.position[1]-5,9,5))
+            else:
+                pygame.draw.rect(screen,(255,69,0),(tower.position[0]+i*14+10,tower.position[1]-3,12,5))
+
+
     for card in Card_List:
         screen.blit(card.picture, card.get_position())
+
     for card in InGameCards:
         screen.blit(card.picture, card.get_position())
         health = int(card.health/card.max_health)*4+1
@@ -271,6 +335,15 @@ def ShowCards(Card_List, screen):
             pygame.draw.rect(screen,(30,144,255),(card.get_position()[0]+i*10,card.get_position()[1]-7,9,5))
     for i in range(budget):
         pygame.draw.rect(screen,(255,0,255),(12+i*(30+4),617,30,20))
+    
+    if Ingame_enm_cards: 
+        for card in Ingame_enm_cards:
+            screen.blit(card.picture, card.get_position())
+            health = int(card.health/card.max_health)*4+1
+            if card.health == card.max_health:
+                health = 4
+            for i in range(health):
+                pygame.draw.rect(screen,(255,69,0),(card.get_position()[0]+i*10,card.get_position()[1]-7,9,5))
 
 
 
@@ -288,12 +361,15 @@ def ShowCards(Card_List, screen):
 
 
 class Tower:
-    def __init__(self, picture_address, health, position, range):
+    def __init__(self,picture_address):
         self.img = pygame.image.load(picture_address)
-        self.health = health
-        self.position = position
-        self.range = range
-        self.power = 10
+        self.health = None
+        self.max_health = 0
+        self.position = None
+        self.range = 0
+        self.damage = 10
+        self.size = 0
+        self.id = 0
 
     def attack(self, enemy):
         enemy.set_health(enemy.get_health - self.power)
@@ -303,6 +379,8 @@ class Tower:
 
     def get_health(self):
         return self.health
+
+
 
 
 # class GameRuntime():
@@ -354,6 +432,12 @@ def deposit(time_need_begin):
     elif budget==10:
         prev_diff = diff
         return True
+def add_enemy(time_left,pre_time_left):
+    if time_left!=pre_time_left:
+        return True
+    else:
+        return False
+
 
 def chosen_card(pos, Card_List):
     for card in Card_List:
@@ -361,18 +445,170 @@ def chosen_card(pos, Card_List):
                 card.get_position()[1] + 80:
             return card
     return None
+def in_range(card , other_cards):
+    if card.att_status == "building":
+        return []
+    in_range_enemy=[]
+    for enemy in other_cards:
+        if enemy.status in card.att_status:
+            if (((enemy.position[0]-20)-(card.position[0]-20))**2 + ((enemy.position[1]-23.5)-(card.position[1]-23.5))**2)**0.5 <= card.range:
+                in_range_enemy.append(enemy)
 
+    return(in_range_enemy)
+
+def random_cards(Giant, Witch, Wizard, Fireball, Archer, Bomber, Balloon):
+    enemy_id = []
+    enm_cards = []
+    while True:
+        if len(enemy_id)==5:
+            break
+        else:
+            a = random.randrange(1,8)
+            if a not in enemy_id and a!=4:
+                enemy_id.append(a)
+    for i in enemy_id:
+        if i == 1:
+            enm_cards.append(Giant)
+        if i == 2:
+            enm_cards.append(Witch)
+        if i ==3:
+            enm_cards.append(Wizard)
+        if i == 4:
+            enm_cards.append(Fireball)
+        if i == 5:
+            enm_cards.append(Bomber)
+        if i == 6:
+            enm_cards.append(Balloon)
+        if i == 7:
+            enm_cards.append(Archer)
+    return enm_cards
+def new_enemy(enm_cards):
+    enm_id = enm_cards[random.randrange(0,5)].id
+    print(enm_id)
+    new_enm = Card("background.jpg")
+    new_enm.position = (random.randrange(90,220), random.randrange(120,200))
+    if enm_id == 1:
+        new_enm.id = 1
+        new_enm.max_health = 800
+        new_enm.health = new_enm.max_health
+        new_enm.status = 'Ground'
+        new_enm.cost = 5
+        new_enm.available_area = 280
+        new_enm.speed = 0.2
+        new_enm.att_status = 'building'
+        new_enm.range = 5 + 42
+        new_enm.damage = 120
+    if enm_id == 2:
+        new_enm.id = 2
+        new_enm.max_health = 500
+        new_enm.health = new_enm.max_health
+        new_enm.status = 'Ground'
+        new_enm.cost = 5
+        new_enm.available_area = 280
+        new_enm.speed = 0.3
+        new_enm.att_status = 'Air,Ground'
+        new_enm.range = 30 + 42
+        new_enm.damage = 50
+    if enm_id == 3:
+        new_enm.id = 3
+        new_enm.max_health = 350
+        new_enm.health = new_enm.max_health
+        new_enm.status = 'Ground'
+        new_enm.cost = 5
+        new_enm.available_area = 280
+        new_enm.speed = 0.3
+        new_enm.att_status = 'Air,Ground'
+        new_enm.range = 30 + 42
+        new_enm.damage = 80
+    if enm_id == 4:
+        new_enm.id = 4
+        new_enm.max_health = 350
+        new_enm.health = new_enm.max_health
+        new_enm.status = 'Air'
+        new_enm.cost = 4
+        new_enm.available_area = 50
+        new_enm.speed = 0.3
+        new_enm.att_status = 'Air,Ground'
+        new_enm.range = 30 + 42
+        new_enm.damage = 50
+    if enm_id == 5:
+        new_enm.id =5
+        new_enm.max_health = 150
+        new_enm.health = new_enm.max_health
+        new_enm.status = 'Ground'
+        new_enm.cost = 3
+        new_enm.available_area = 280
+        new_enm.speed = 0.3
+        new_enm.att_status = 'Air,Ground'
+        new_enm.range = 30 + 42
+        new_enm.damage = 50
+    if enm_id == 6:
+        new_enm.id = 6
+        new_enm.max_health = 600
+        new_enm.health = new_enm.max_health
+        new_enm.status = 'Air'
+        new_enm.cost = 5
+        new_enm.available_area = 280
+        new_enm.speed = 0.3
+        new_enm.att_status = 'building'
+        new_enm.range = 42 + 5
+        new_enm.damage = 100
+    if enm_id == 7:
+        new_enm.id = 7
+        new_enm.max_health = 300
+        new_enm.health = new_enm.max_health
+        new_enm.status = 'Ground'
+        new_enm.cost = 3
+        new_enm.available_area = 280
+        new_enm.speed = 0.3
+        new_enm.att_status = 'Air,Ground'
+        new_enm.range = 30 + 42
+        new_enm.damage = 50
+    if new_enm.id == 1:
+        new_enm.picture = pygame.image.load("GiantCard_ingame.png")
+    elif new_enm.id == 2:
+        new_enm.picture = pygame.image.load("WitchCard_ingame.png")
+    elif new_enm.id == 3:
+        new_enm.picture = pygame.image.load("WizardCard_ingame.png")
+    elif new_enm.id == 4:
+        new_enm.picture = pygame.image.load("FireballCard_ingame.png")
+    elif new_enm.id == 5:
+        new_enm.picture = pygame.image.load("BomberCard_ingame.png")
+    elif new_enm.id == 6:
+        new_enm.picture = pygame.image.load("BalloonCard_ingame.png")
+    elif new_enm.id == 7:
+        new_enm.picture = pygame.image.load("archers_ingame.png")
+    elif new_enm.id == 8:
+        new_enm.picture = pygame.image.load("LavaHoundCard_ingame.png")
+
+    # new_enm.picture=enm_cards[a].picture
+    # new_enm.position = (random.randrange(90,220), random.randrange(120,260))
+    # new_enm.damage = enm_cards[a].damage
+    # new_enm.max_health = enm_cards[a].max_health
+    # new_enm.health = enm_cards[a].health
+    # new_enm.status = enm_cards[a].status
+    # new_enm.att_status = enm_cards[a].att_status
+    # new_enm.cost = enm_cards[a].cost
+    # new_enm.speed = enm_cards[a].speed
+    # new_enm.id = enm_cards[a].id
+    # new_enm.range = enm_cards[a].range
+    # new_enm.available_area = enm_cards[a].available_area
+    # new_enm.first_x = enm_cards[a].first_x
+    return new_enm
 
 def main():
+    pre_time_left = None
+    result = None
     time_need_begin = None
     game_end = None
     game_begin = None
     budget_need = True
-    global Card_List, select_card, card , budget , prev_diff
-    InGameCards = []
+    Ingame_enm_cards = []
+    global Card_List, select_card, card , budget , prev_diff , Tower_List , Other_Towers,InGameCards
     pygame.init()
     Clash_Font = pygame.font.SysFont("Chalkduster",25)
     Clash_Font1 = pygame.font.SysFont("Chalkduster",30)
+    Clash_Font2 = pygame.font.SysFont("Chalkduster",18)
     windowWidth = 360
     windowHeight = 640
     Giant = Card("GiantCard copy.png")
@@ -391,6 +627,21 @@ def main():
     Archer.id = 7
     Lava = Card("LavaHoundCard copy.png")
     Lava.id = 8
+    Main_Tower = Tower("main_tower.png")
+    Main_Tower.id = 1
+    Side_Tower1 = Tower("side_tower.png")
+    Side_Tower1.id = 2
+    Side_Tower2 = Tower("side_tower.png")
+    Side_Tower2.id = 3
+    Tower_List.extend([Main_Tower,Side_Tower1,Side_Tower2])
+    Enm_Main_Tower = Tower("tower2.png")
+    Enm_Main_Tower.id = 1
+    Enm_Side_Tower1 = Tower("tower1.png")
+    Enm_Side_Tower1.id = 2
+    Enm_Side_Tower2 = Tower("tower1.png")
+    Enm_Side_Tower2.id = 3
+    Other_Towers.extend([Enm_Main_Tower,Enm_Side_Tower1,Enm_Side_Tower2])
+    enm_cards = random_cards(Giant, Witch, Wizard, Fireball, Archer, Bomber, Balloon)
     screen = pygame.display.set_mode((windowWidth, windowHeight))
 
     while select_card:
@@ -425,6 +676,8 @@ def main():
         elif 130 < pygame.mouse.get_pos()[0] < 230 and 500 < pygame.mouse.get_pos()[1] < 550 and \
                 pygame.mouse.get_pressed()[0]:
             pygame.draw.rect(screen, (0, 200, 0), (130, 500, 100, 50))
+        lable = Clash_Font2.render("Ready",True,(0,0,0))
+        screen.blit(lable,(150,510))
         pygame.display.update()
     intial()
     game_begin = time.time()
@@ -441,13 +694,30 @@ def main():
                 lable = Clash_Font.render(str(time_left//60)+':'+'0'+str(time_left%60),True,(255,0,0))
             else:
                 lable = Clash_Font.render(str(time_left//60)+':'+str(time_left%60),True,(255,0,0))
-        if int(game_end - game_begin) == 180:
+        if Main_Tower not in Tower_List:
+            result = -1
             break
+        if Enm_Main_Tower not in Other_Towers:
+            result = 1
+            break
+        if int(game_end - game_begin) == 180:
+            if len (Other_Towers) > len(Tower_List):
+                result = -1
+            elif len (Other_Towers) == len(Tower_List):
+                result = 0
+            elif len (Other_Towers) < len(Tower_List):
+                result = 1
+            break
+        if time_left%6 == 0 and add_enemy(time_left,pre_time_left):
+            enemy = new_enemy(enm_cards)
+            Ingame_enm_cards.append(enemy)
+        pre_time_left = time_left
+
         main_get_event()
         screen.fill((255, 255, 255))
         screen.blit(pygame.image.load("background.jpg"), (0, 0))
         screen.blit(lable,(300,10))
-        ShowCards(Card_List, screen)
+        ShowCards(Card_List, screen ,Ingame_enm_cards)
         if budget_need and budget!=10:
             time_need_begin = time.time()
             budget_need = False
@@ -456,8 +726,49 @@ def main():
             card = chosen_card(m.get_pos(), Card_List)
         if card:
             card.set_position(m.get_pos())
+        for ingamecard in InGameCards:
+            in_range_tower = in_range(ingamecard, Other_Towers)
+            in_range_enmy = in_range(ingamecard, Ingame_enm_cards)
+            if in_range_tower:
+                closest_distance = (640**2+360**2)**0.5
+                for tower in in_range_tower:
+                    distance = (((tower.position[0]-tower.size[0]/2) - (ingamecard.position[0]-20))**2 + ((tower.position[1]-tower.size[1]/2) - (ingamecard.position[1]-23.5))**2)**0.5
+                    if distance < closest_distance:
+                        closest_tower = tower
+                        closest_distance = distance
+                ingamecard.attack(closest_tower)
+            elif in_range_enmy and ingamecard.att_status != 'building':
+                closest_distance = (640 ** 2 + 360 ** 2) ** 0.5
+                for enemy in in_range_enmy:
+                    distance = (((enemy.position[0] - 20) - (ingamecard.position[0] - 20)) ** 2 + (
+                                (enemy.position[1] - 23.5) - (ingamecard.position[1] - 23.5)) ** 2) ** 0.5
+                    if distance < closest_distance:
+                        closest_enemy = enemy
+                        closest_distance = distance
+                ingamecard.attack(closest_enemy)
+            else:
+                ingamecard.move()
 
         pygame.display.update()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        if  result == -1:
+            screen.fill((255,0,0))
+            lable = Clash_Font1.render("You lost",True,(0,0,0))
+            screen.blit(lable,(100,300))
+        if  result == 1:
+            screen.fill((0,255,0))
+            lable = Clash_Font1.render("You Win",True,(0,0,0))
+            screen.blit(lable,(100,300))
+        if  result == 0:
+            screen.fill((255,255,255))
+            lable = Clash_Font1.render("Draw",True,(0,0,0))
+            screen.blit(lable,(130,300))
+        pygame.display.update()
+
 
 
 main()
