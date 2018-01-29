@@ -1,9 +1,10 @@
-import pygame,sys,time
+import pygame, sys, time
 from pygame import mouse as m
-#from threading import Timer as T
-InGameCards=[]
+
+# from threading import Timer as T
+InGameCards = []
 Card_List = []
-other_cards=[]
+other_cards = []
 other_towers = []
 in_range_enmy = []
 budget = 5
@@ -165,16 +166,17 @@ def get_event(Giant, Witch, Wizard, Fireball, Archer, Bomber, Balloon):
 
 
 def main_get_event():
-    global card,InGameCards,Card_List,budget
+    global card, InGameCards, Card_List, budget
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
         if card:
-            if event.type == pygame.MOUSEBUTTONUP and card.get_position()[1] > card.available_area and card.get_cost() <= budget and card.get_position()[1] < 440:
+            if event.type == pygame.MOUSEBUTTONUP and card.get_position()[
+                1] > card.available_area and card.get_cost() <= budget and card.get_position()[1] < 440:
                 next_card = Card('background.jpg')
-                next_card.picture=card.picture
-                next_card.position = (card.first_x , 530)
+                next_card.picture = card.picture
+                next_card.position = (card.first_x, 530)
                 next_card.damage = card.damage
                 next_card.max_health = card.max_health
                 next_card.health = card.health
@@ -210,7 +212,7 @@ def main_get_event():
                 card = None
             elif event.type == pygame.MOUSEBUTTONUP:
 
-                card.position = (card.first_x , 530)
+                card.position = (card.first_x, 530)
                 card = None
 
 
@@ -229,11 +231,35 @@ class Card:
         self.range = 0
         self.available_area = 0
         self.first_x = 0
+
     def move(self):
-        self.position = (self.position[0] + self.speed * (Destination[0] - self.position[0]) / (
-                    (Destination[0] - self.position[0]) ** 2 + (Destination[1] - self.position[1]) ** 2) ** 0.5,
-                         self.position[1] + self.speed * (Destination[1] - self.position[1]) / (
-                                (Destination[0] - self.position[0]) ** 2 + (Destination[1] - self.position[1]) ** 2) ** 0.5)
+        if self.position[0] < 180 - 20 and self.position[1] >= 285:
+            Destination = (67, 290)
+        elif self.position[0] >= 180 - 20 and self.position[1] >= 285:
+            Destination = (255, 290)
+        if 255 - 2 < self.position[0] < 255 + 2 and 294 >= self.position[1] >= 244:
+            Destination = (255, 245)
+        elif 67-5< self.position[0] < 67+5 and 294 >= self.position[1] >= 244:
+            Destination = (70, 245)
+        if not (self.position[0]-2<Destination[0]<self.position[0]+2 and self.position[1]-2<Destination[1]<self.position[1]+2):
+            self.position = (self.position[0] + self.speed  * (Destination[0] - self.position[0]) / ((Destination[0] - self.position[0]) ** 2 + (Destination[1] - self.position[1]) ** 2) ** 0.5,
+                                               self.position[1] + self.speed* (Destination[1] - self.position[1]) / (
+                                                           (Destination[0] - self.position[0]) ** 2 + (
+                                                               Destination[1] - self.position[1]) ** 2) ** 0.5)
+        else:
+            closest_distance = (640 ** 2 + 360 ** 2) ** 0.5
+            for tower in other_towers:
+                distance = (((tower.position[0] - tower.size[0] / 2) - (self.position[0] - 20)) ** 2 + (
+                        (tower.position[1] - tower.size[1] / 2) - (self.position[1] - 23.5)) ** 2) ** 0.5
+                if distance < closest_distance:
+                    closest_tower = tower
+                    closest_distance = distance
+            Destination = closest_tower.position
+            self.position = (self.position[0] + self.speed * (Destination[0] - self.position[0]) / (
+                        (Destination[0] - self.position[0]) ** 2 + (Destination[1] - self.position[1]) ** 2) ** 0.5,
+                             self.position[1] + self.speed * (Destination[1] - self.position[1]) / (
+                                     (Destination[0] - self.position[0]) ** 2 + (
+                                     Destination[1] - self.position[1]) ** 2) ** 0.5)
 
     def attack(self, enemy):
         enemy.set_health(enemy.get_health - self.damage)
@@ -268,7 +294,6 @@ def ShowCards(Card_List, screen):
         screen.blit(card.picture, card.get_position())
     for card in InGameCards:
         screen.blit(card.picture, card.get_position())
-
 
 
 '''class Giant(Card):
@@ -327,7 +352,6 @@ class Tower:
 def deposit(time_need_begin):
     global budget
     diff = int((time.time() - time_need_begin) * 200)
-    print(diff)
     if budget < 10 and diff % 100 == 0:
         budget += 1
 
@@ -336,30 +360,32 @@ def deposit(time_need_begin):
         return True
 
 
-
 def chosen_card(pos, Card_List):
     for card in Card_List:
         if card.get_position()[0] < pos[0] < card.get_position()[0] + 68 and card.get_position()[1] < pos[1] < \
                 card.get_position()[1] + 80:
             return card
     return None
-def in_range(card , other_cards):
+
+
+def in_range(card, other_cards):
     if card.att_status == "building":
         return []
-    in_range_enemy=[]
+    in_range_enemy = []
     for enemy in other_cards:
         if enemy.status in card.att_status:
-            if (((enemy.position[0]-20)-(card.position[0]-20))**2 + ((enemy.position[1]-23.5)-(card.position[1]-23.5))**2)**0.5 <= card.range:
+            if (((enemy.position[0] - 20) - (card.position[0] - 20)) ** 2 + (
+                    (enemy.position[1] - 23.5) - (card.position[1] - 23.5)) ** 2) ** 0.5 <= card.range:
                 in_range_enemy.append(enemy)
 
-    return(in_range_enemy)
+    return (in_range_enemy)
 
 
 def main():
-    time_need_begin=None
+    time_need_begin = None
     budget_need = True
-    global Card_List, select_card, card,budget
-    #refill_time = T(2.0, deposit(budget))
+    global Card_List, select_card, card, budget
+    # refill_time = T(2.0, deposit(budget))
     # game_time = T(1.0,clock(watch))
     pygame.init()
     windowWidth = 360
@@ -418,15 +444,15 @@ def main():
     game_begin = time.time()
     while True:
         game_end = time.time()
-        if int(game_end - game_begin) == 5:
+        if int(game_end - game_begin) == 60:
             break
         main_get_event()
         screen.fill((255, 255, 255))
         screen.blit(pygame.image.load("background.jpg"), (0, 0))
         ShowCards(Card_List, screen)
-        if budget_need and budget!=10:
-        	time_need_begin = time.time()
-        	budget_need = False
+        if budget_need and budget != 10:
+            time_need_begin = time.time()
+            budget_need = False
         budget_need = deposit(time_need_begin)
         if m.get_pressed()[0] and m.get_pos()[1] > 400 and not card:
             card = chosen_card(m.get_pos(), Card_List)
@@ -436,28 +462,25 @@ def main():
             in_range_tower = in_range(ingamecard, other_towers)
             in_range_enmy = in_range(ingamecard, other_cards)
             if in_range_tower:
-                closest_distance = (640**2+360**2)**0.5
+                closest_distance = (640 ** 2 + 360 ** 2) ** 0.5
                 for tower in in_range_tower:
-                    distance = (((tower.position[0]-tower.size[0]/2) - (ingamecard.position[0]-20))**2 + ((tower.position[1]-tower.size[1]/2) - (ingamecard.position[1]-23.5))**2)**0.5
+                    distance = (((tower.position[0] - tower.size[0] / 2) - (ingamecard.position[0] - 20)) ** 2 + (
+                                (tower.position[1] - tower.size[1] / 2) - (ingamecard.position[1] - 23.5)) ** 2) ** 0.5
                     if distance < closest_distance:
                         closest_tower = tower
                         closest_distance = distance
                 ingamecard.attack(closest_tower)
-            elif in_range_enmy:
+            elif in_range_enmy and ingamecard.att_status != 'building':
                 closest_distance = (640 ** 2 + 360 ** 2) ** 0.5
                 for enemy in in_range_enmy:
                     distance = (((enemy.position[0] - 20) - (ingamecard.position[0] - 20)) ** 2 + (
-                                (enemy.position[1] - 23.5) - (ingamecard.position[1] - 23.5)) ** 2) ** 0.5
+                            (enemy.position[1] - 23.5) - (ingamecard.position[1] - 23.5)) ** 2) ** 0.5
                     if distance < closest_distance:
                         closest_enemy = enemy
                         closest_distance = distance
                 ingamecard.attack(closest_enemy)
             else:
                 ingamecard.move()
-
-
-
-
 
         pygame.display.update()
 
