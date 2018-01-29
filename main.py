@@ -1,16 +1,18 @@
-import pygame
-import sys
+import pygame,sys,time
 from pygame import mouse as m
 #from threading import Timer as T
 InGameCards=[]
 Card_List = []
-int((360 - len(Card_List) * 60) / (len(Card_List) + 1))
+other_cards=[]
+other_towers = []
+in_range_enmy = []
+budget = 5
 
 select_card = True
 card = None
 
 
-def intial(screen):
+def intial():
     carts_distance = int((360 - len(Card_List) * 60) / (len(Card_List) + 1))
     distance = carts_distance
     for card in Card_List:
@@ -162,14 +164,13 @@ def get_event(Giant, Witch, Wizard, Fireball, Archer, Bomber, Balloon):
             select_card = False
 
 
-def main_get_event(budget):
-    global card,InGameCards,Card_List
+def main_get_event():
+    global card,InGameCards,Card_List,budget
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
         if card:
-            print(len(Card_List))
             if event.type == pygame.MOUSEBUTTONUP and card.get_position()[1] > card.available_area and card.get_cost() <= budget and card.get_position()[1] < 440:
                 next_card = Card('background.jpg')
                 next_card.picture=card.picture
@@ -205,6 +206,7 @@ def main_get_event(budget):
 
                 InGameCards.append(card)
                 Card_List.remove(card)
+                budget -= card.cost
                 card = None
             elif event.type == pygame.MOUSEBUTTONUP:
 
@@ -227,7 +229,7 @@ class Card:
         self.range = 0
         self.available_area = 0
         self.first_x = 0
-    def move(self, Destination):
+    def move(self):
         self.position = (self.position[0] + self.speed * (Destination[0] - self.position[0]) / (
                     (Destination[0] - self.position[0]) ** 2 + (Destination[1] - self.position[1]) ** 2) ** 0.5,
                          self.position[1] + self.speed * (Destination[1] - self.position[1]) / (
@@ -322,20 +324,17 @@ class Tower:
 # 		Lava = Card("LavaHoundCard copy.png")
 
 # 	def start_game(self):
+def deposit(time_need_begin):
+    global budget
+    diff = int((time.time() - time_need_begin) * 200)
+    print(diff)
+    if budget < 10 and diff % 100 == 0:
+        budget += 1
 
+        return False
+    elif budget == 10:
+        return True
 
-# def deposit(budget):
-#     if budget < 10:
-#         budget += 1
-#         T(2.0, deposit(budget))
-#     else:
-#         budget_need = False
-
-
-# def clock(watch):
-#     watch -= 1
-#     if watch > 0:
-#         T(1.0, clock(watch)).start()
 
 
 def chosen_card(pos, Card_List):
@@ -344,15 +343,23 @@ def chosen_card(pos, Card_List):
                 card.get_position()[1] + 80:
             return card
     return None
+def in_range(card , other_cards):
+    if card.att_status == "building":
+        return []
+    in_range_enemy=[]
+    for enemy in other_cards:
+        if enemy.status in card.att_status:
+            if (((enemy.position[0]-20)-(card.position[0]-20))**2 + ((enemy.position[1]-23.5)-(card.position[1]-23.5))**2)**0.5 <= card.range:
+                in_range_enemy.append(enemy)
+
+    return(in_range_enemy)
 
 
 def main():
+    time_need_begin=None
     budget_need = True
-    global Card_List, select_card, card
-    InGameCards = []
-    budget = 5
+    global Card_List, select_card, card,budget
     #refill_time = T(2.0, deposit(budget))
-    watch = 120
     # game_time = T(1.0,clock(watch))
     pygame.init()
     windowWidth = 360
@@ -407,22 +414,50 @@ def main():
                 pygame.mouse.get_pressed()[0]:
             pygame.draw.rect(screen, (0, 200, 0), (130, 500, 100, 50))
         pygame.display.update()
-    intial(screen)
-    #clock(watch)
+    intial()
+    game_begin = time.time()
     while True:
-        main_get_event(budget)
+        game_end = time.time()
+        if int(game_end - game_begin) == 5:
+            break
+        main_get_event()
         screen.fill((255, 255, 255))
         screen.blit(pygame.image.load("background.jpg"), (0, 0))
         ShowCards(Card_List, screen)
-
-        # if budget_need:
-        #     deposit(budget)
+        if budget_need and budget!=10:
+        	time_need_begin = time.time()
+        	budget_need = False
+        budget_need = deposit(time_need_begin)
         if m.get_pressed()[0] and m.get_pos()[1] > 400 and not card:
             card = chosen_card(m.get_pos(), Card_List)
         if card:
             card.set_position(m.get_pos())
-        # for player in InGameCards:
-        #	if player.id == 4:
+        for ingamecard in InGameCards:
+            in_range_tower = in_range(ingamecard, other_towers)
+            in_range_enmy = in_range(ingamecard, other_cards)
+            if in_range_tower:
+                closest_distance = (640**2+360**2)**0.5
+                for tower in in_range_tower:
+                    distance = (((tower.position[0]-tower.size[0]/2) - (ingamecard.position[0]-20))**2 + ((tower.position[1]-tower.size[1]/2) - (ingamecard.position[1]-23.5))**2)**0.5
+                    if distance < closest_distance:
+                        closest_tower = tower
+                        closest_distance = distance
+                ingamecard.attack(closest_tower)
+            elif in_range_enmy:
+                closest_distance = (640 ** 2 + 360 ** 2) ** 0.5
+                for enemy in in_range_enmy:
+                    distance = (((enemy.position[0] - 20) - (ingamecard.position[0] - 20)) ** 2 + (
+                                (enemy.position[1] - 23.5) - (ingamecard.position[1] - 23.5)) ** 2) ** 0.5
+                    if distance < closest_distance:
+                        closest_enemy = enemy
+                        closest_distance = distance
+                ingamecard.attack(closest_enemy)
+            else:
+                ingamecard.move()
+
+
+
+
 
         pygame.display.update()
 
