@@ -55,10 +55,10 @@ def intial():
             card.status = 'Air'
             card.cost = 4
             card.available_area = 50
-            card.speed = 0.3
+            card.speed = 0
             card.att_status = 'Air,Ground'
             card.range = 30 + 42
-            card.damage = 500/50
+            card.damage = 300
         if card.id == 5:
             card.max_health = 150.0
             card.health = card.max_health
@@ -272,6 +272,8 @@ class Card:
                                 (Destination[0] - self.position[0]) ** 2 + (Destination[1] - self.position[1]) ** 2) ** 0.5)
     def attack(self, enemy):
         enemy.set_health(enemy.get_health() - self.damage)
+        if self.id == 4:
+            self.set_health(-1)
 
     def get_position(self):
         return self.position
@@ -757,7 +759,7 @@ def main():
             elif len (Other_Towers) == len(Tower_List) and extra_time:
                 result = 0
                 break
-        if time_left%8 == 0 and add_enemy(time_left,pre_time_left):
+        if time_left%7 == 0 and add_enemy(time_left,pre_time_left):
             enemy = new_enemy(enm_cards)
             Ingame_enm_cards.append(enemy)
         pre_time_left = time_left
