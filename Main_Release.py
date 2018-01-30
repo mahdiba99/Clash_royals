@@ -105,21 +105,21 @@ def intial():
             tower.health = tower.max_health
             tower.position = (149,406)
             tower.range = 120
-            tower.damage = 1
+            tower.damage = 1.5
             tower.size = (57,78)
         if tower.id == 2:
             tower.max_health = 1500.0
             tower.health = tower.max_health
             tower.position = (68,370)
             tower.range = 100
-            tower.damage = 0.5
+            tower.damage = 1
             tower.size = (40,51)
         if tower.id == 3:
             tower.max_health = 1500.0
             tower.health = tower.max_health
             tower.position = (258,370)
             tower.range = 100
-            tower.damage = 0.5
+            tower.damage = 1
             tower.size = (40,51)
     for tower in Other_Towers:
         if tower.id == 1:
@@ -127,21 +127,21 @@ def intial():
             tower.health = tower.max_health
             tower.position = (149,56)
             tower.range = 120
-            tower.damage = 1
+            tower.damage = 1.5
             tower.size = (60,81)
         if tower.id == 2:
             tower.max_health = 1500.0
             tower.health = tower.max_health
             tower.position = (68,110)
             tower.range = 100
-            tower.damage = 0.5
+            tower.damage = 1
             tower.size = (40,54)
         if tower.id == 3:
             tower.max_health = 1500.0
             tower.health = tower.max_health
             tower.position = (258,110)
             tower.range = 100
-            tower.damage = 0.5
+            tower.damage = 1
             tower.size = (40,54)
 
 
@@ -309,8 +309,17 @@ def ShowCards(Card_List, screen , Ingame_enm_cards):
             health -=1
         if tower.id!=1:
             pygame.draw.rect(screen,(30,144,255),(tower.position[0]+6,tower.position[1]+66,health,5))
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+6,tower.position[1]+66),(tower.position[0]+6+health,tower.position[1]+66))
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+6,tower.position[1]+66),(tower.position[0]+6,tower.position[1]+66+5))
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+6+health,tower.position[1]+66),(tower.position[0]+6+health,tower.position[1]+66+5))
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+6,tower.position[1]+66+5),(tower.position[0]+6+health,tower.position[1]+66+5))
+
         else:
             pygame.draw.rect(screen,(30,144,255),(tower.position[0]+4,tower.position[1]+76,health,5))
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+4,tower.position[1]+76),(tower.position[0]+4+health,tower.position[1]+76))
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+4,tower.position[1]+76),(tower.position[0]+4,tower.position[1]+76+5))
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+4+health,tower.position[1]+76),(tower.position[0]+4+health,tower.position[1]+76+5))
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+4,tower.position[1]+76+5),(tower.position[0]+4+health,tower.position[1]+76+5))
 
         # for i in range(health):
         #     if tower.id!=1:
@@ -326,9 +335,16 @@ def ShowCards(Card_List, screen , Ingame_enm_cards):
         
         if tower.id!=1:
             pygame.draw.rect(screen,(255,69,0),(tower.position[0]+8,tower.position[1]-5,health,5))
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+8,tower.position[1]-5),(tower.position[0]+8+health,tower.position[1]-5))
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+8,tower.position[1]-5),(tower.position[0]+8,tower.position[1]-5+5))
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+8+health,tower.position[1]-5),(tower.position[0]+8+health,tower.position[1]-5+5))
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+8,tower.position[1]),(tower.position[0]+8+health,tower.position[1]-5+5))
         else:
             pygame.draw.rect(screen,(255,69,0),(tower.position[0]+10,tower.position[1]-3,health,5))
-
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+10,tower.position[1]-3),(tower.position[0]+10+health,tower.position[1]-3))
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+10,tower.position[1]-3),(tower.position[0]+10,tower.position[1]-3+5))
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+10+health,tower.position[1]-3),(tower.position[0]+10+health,tower.position[1]-3+5))
+            pygame.draw.line(screen,(255,255,255),(tower.position[0]+10,tower.position[1]-3+5),(tower.position[0]+10+health,tower.position[1]-3+5))
 
     for card in Card_List:
         screen.blit(card.picture, card.get_position())
@@ -339,6 +355,10 @@ def ShowCards(Card_List, screen , Ingame_enm_cards):
         if card.health == card.max_health:
             health -=1
         pygame.draw.rect(screen,(30,144,255),(card.get_position()[0],card.get_position()[1]-7,health,5))
+        pygame.draw.line(screen,(255,255,255),(card.position[0],card.position[1]-7),(card.position[0]+health,card.position[1]-7))
+        pygame.draw.line(screen,(255,255,255),(card.position[0],card.position[1]-7),(card.position[0],card.position[1]-7+5))
+        pygame.draw.line(screen,(255,255,255),(card.position[0]+health,card.position[1]-7),(card.position[0]+health,card.position[1]-7+5))
+        pygame.draw.line(screen,(255,255,255),(card.position[0],card.position[1]-7+5),(card.position[0]+health,card.position[1]-7+5))
     for i in range(budget):
         pygame.draw.rect(screen,(255,0,255),(12+i*(30+4),617,30,20))
     
@@ -349,7 +369,10 @@ def ShowCards(Card_List, screen , Ingame_enm_cards):
             if card.health == card.max_health:
                 health -=1            
             pygame.draw.rect(screen,(255,69,0),(card.get_position()[0],card.get_position()[1]-7,health,5))
-
+            pygame.draw.line(screen,(255,255,255),(card.position[0],card.position[1]-7),(card.position[0]+health,card.position[1]-7))
+            pygame.draw.line(screen,(255,255,255),(card.position[0],card.position[1]-7),(card.position[0],card.position[1]-7+5))
+            pygame.draw.line(screen,(255,255,255),(card.position[0]+health,card.position[1]-7),(card.position[0]+health,card.position[1]-7+5))
+            pygame.draw.line(screen,(255,255,255),(card.position[0],card.position[1]-7+5),(card.position[0]+health,card.position[1]-7+5))
 
 
 '''class Giant(Card):
