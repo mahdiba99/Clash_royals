@@ -33,7 +33,7 @@ def intial():
             card.max_health = 500.0
             card.health = card.max_health
             card.status = 'Ground'
-            card.cost = 5
+            card.cost = 4
             card.available_area = 280
             card.speed = 0.3
             card.att_status = 'Air,Ground'
@@ -66,7 +66,7 @@ def intial():
             card.cost = 3
             card.available_area = 280
             card.speed = 0.3
-            card.att_status = 'Air,Ground'
+            card.att_status = 'Ground'
             card.range = 30 + 42
             card.damage = 200/50
         if card.id == 6:
@@ -561,6 +561,11 @@ def new_enemy(enm_cards):
         if i.position[1]<230:
             new_enm.position = (i.position[0]+20,i.position[1]+20)
             danger = True
+            while True:
+                if enm_id== 6 or enm_id == 1:
+                    enm_id = enm_cards[random.randrange(0,5)].id
+                else:
+                    break
             break
     if not danger:
         new_enm.position = (random.randrange(90,220), random.randrange(120,200))
@@ -580,7 +585,7 @@ def new_enemy(enm_cards):
         new_enm.max_health = 500.0
         new_enm.health = new_enm.max_health
         new_enm.status = 'Ground'
-        new_enm.cost = 5
+        new_enm.cost = 4
         new_enm.available_area = 280
         new_enm.speed = 0.3
         new_enm.att_status = 'Air,Ground'
@@ -616,7 +621,7 @@ def new_enemy(enm_cards):
         new_enm.cost = 3
         new_enm.available_area = 280
         new_enm.speed = 0.3
-        new_enm.att_status = 'Air,Ground'
+        new_enm.att_status = 'Ground'
         new_enm.range = 30 + 42
         new_enm.damage = 200/50
     if enm_id == 6:
