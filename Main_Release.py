@@ -105,7 +105,7 @@ def intial():
             tower.health = tower.max_health
             tower.position = (149,406)
             tower.range = 120
-            tower.damage = 1.5
+            tower.damage = 1.2
             tower.size = (57,78)
         if tower.id == 2:
             tower.max_health = 1500.0
@@ -127,7 +127,7 @@ def intial():
             tower.health = tower.max_health
             tower.position = (149,56)
             tower.range = 120
-            tower.damage = 1.5
+            tower.damage = 1.2
             tower.size = (60,81)
         if tower.id == 2:
             tower.max_health = 1500.0
@@ -556,7 +556,14 @@ def random_cards(Giant, Witch, Wizard, Fireball, Archer, Bomber, Balloon):
 def new_enemy(enm_cards):
     enm_id = enm_cards[random.randrange(0,5)].id
     new_enm = Card("background.jpg")
-    new_enm.position = (random.randrange(90,220), random.randrange(120,200))
+    danger = False
+    for i in InGameCards:
+        if i.position[1]<230:
+            new_enm.position = (i.position[0]+20,i.position[1]+20)
+            danger = True
+            break
+    if not danger:
+        new_enm.position = (random.randrange(90,220), random.randrange(120,200))
     if enm_id == 1:
         new_enm.id = 1
         new_enm.max_health = 800.0
